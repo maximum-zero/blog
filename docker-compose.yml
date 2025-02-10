@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .  # 현재 디렉토리에서 Dockerfile 사용
+    container_name: board-app
+    ports:
+      - "9000:9000"  # 애플리케이션 서버 포트 매핑
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/board
+      SPRING_DATASOURCE_USERNAME: maximum0
+      SPRING_DATASOURCE_PASSWORD: maximum0
+    depends_on:
+      - db  # DB가 먼저 실행된 후 애플리케이션 실행
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13  # PostgreSQL 이미지 사용
+    container_name: board-db
+    environment:
+      POSTGRES_USER: maximum0
+      POSTGRES_PASSWORD: maximum0
+      POSTGRES_DB: board
+    ports:
+      - "5435:5432"  # PostgreSQL 서버 포트 매핑
+    volumes:
+      - postgres-data:/var/lib/postgresql/board/data  # 데이터 영속성 유지
+      - ./sql/:/docker-entrypoint-initdb.d/  # 초기화 SQL 파일
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
