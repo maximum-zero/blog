@@ -1,7 +1,6 @@
 package org.maximum0.blog.service
 
-import org.maximum0.blog.domain.member.Member
-import org.maximum0.blog.domain.member.MemberRepository
+import org.maximum0.blog.domain.member.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,8 +10,9 @@ class MemberService(
 ){
 
     @Transactional(readOnly = true)
-    fun findAll(): MutableList<Member> = memberRepository.findAll()
-
-
+    fun findAll(): List<MemberResponse> =
+        memberRepository.findAll().map {
+            it.toDto()
+        }
 
 }

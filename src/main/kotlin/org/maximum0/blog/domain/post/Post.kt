@@ -1,8 +1,10 @@
 package org.maximum0.blog.domain.post
 
 import jakarta.persistence.*
+import org.hibernate.Length
 import org.maximum0.blog.domain.AuditingEntity
 import org.maximum0.blog.domain.member.Member
+import org.maximum0.blog.domain.member.toDto
 
 @Entity
 @Table(name = "tb_post")
@@ -16,6 +18,7 @@ class Post(
     var title: String = title
         protected set
 
+    @Lob
     @Column(name = "content")
     var content: String = content
         protected set
@@ -24,4 +27,17 @@ class Post(
     var member: Member = member
         protected set
 
+    override fun toString(): String {
+        return "Post(title='$title', content='$content', member=$member)"
+    }
+
+}
+
+fun Post.toDto(): PostResponse {
+    return PostResponse(
+        id = this.id!!,
+        title = this.title,
+        content = this.content,
+        member = this.member.toDto()
+    )
 }

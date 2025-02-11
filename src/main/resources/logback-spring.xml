@@ -19,13 +19,13 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="CONSOLE" />
     </root>
 
-<!-- 파일 로깅 -->
+    <!-- 파일 로깅 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/${LOG_FILE_BASE}.log</file>
+        <file>${LOG_PATH}/${LOG_FILE_BASE}-%d{yyyy-MM-dd}.%i.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${LOG_FILE_BASE}.%d{yyyyMMdd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
