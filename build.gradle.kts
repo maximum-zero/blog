@@ -28,6 +28,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.gavlyukovskiy/p6spy-spring-boot-starter
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.2")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    // https://kotlin-jdsl.gitbook.io/docs/jpql-with-kotlin-jdsl
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.5.4")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.5.4")
+    implementation("com.linecorp.kotlin-jdsl:spring-data-jpa-support:3.5.4")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 //    implementation("org.springframework.boot:spring-boot-starter-cache")

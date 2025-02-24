@@ -11,7 +11,7 @@ class MemberService(
 
     @Transactional(readOnly = true)
     fun findAll(): List<MemberResponse> =
-        memberRepository.findAll().map {
+        memberRepository.findMembers().map {
             it.toDto()
         }
 
