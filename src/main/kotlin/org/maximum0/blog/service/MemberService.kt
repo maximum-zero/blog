@@ -1,6 +1,8 @@
 package org.maximum0.blog.service
 
 import org.maximum0.blog.domain.member.*
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -10,8 +12,8 @@ class MemberService(
 ){
 
     @Transactional(readOnly = true)
-    fun findAll(): List<MemberResponse> =
-        memberRepository.findMembers().map {
+    fun findAll(pageable: Pageable): Page<MemberResponse> =
+        memberRepository.findMembers(pageable).map {
             it.toDto()
         }
 
