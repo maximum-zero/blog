@@ -17,4 +17,17 @@ class MemberService(
             it.toDto()
         }
 
+    @Transactional(readOnly = true)
+    fun findById(id: Long): MemberResponse =
+        memberRepository.findById(id).orElseThrow().toDto()
+
+    @Transactional
+    fun save(dto: MemberSaveRequest): MemberResponse =
+        memberRepository.save(dto.toEntity()).toDto()
+
+
+    @Transactional
+    fun deleteById(id: Long) =
+        memberRepository.deleteById(id)
+
 }
