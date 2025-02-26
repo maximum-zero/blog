@@ -1,6 +1,7 @@
 package org.maximum0.blog.domain.post
 
 import com.linecorp.kotlinjdsl.support.spring.data.jpa.repository.KotlinJdslJpqlExecutor
+import org.maximum0.blog.domain.member.Member
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -22,7 +23,10 @@ class PostCustomRepositoryImpl(
     override fun findPosts(pageable: Pageable): Page<Post> {
         val results =  kotlinJdslJpqlExecutor.findPage(pageable) {
             select(entity(Post::class))
-                .from(entity(Post::class))
+                .from(
+                    entity(Post::class),
+                    fetchJoin(Post::member)
+                )
                 .orderBy(path(Post::id).desc())
         }.filterNotNull()
 
