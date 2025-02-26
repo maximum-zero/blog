@@ -1,6 +1,7 @@
 package org.maximum0.blog.service
 
 import org.maximum0.blog.domain.member.*
+import org.maximum0.blog.exception.MemberNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -19,7 +20,11 @@ class MemberService(
 
     @Transactional(readOnly = true)
     fun findById(id: Long): MemberResponse =
-        memberRepository.findById(id).orElseThrow().toDto()
+        memberRepository.findById(id)
+            .orElseThrow{
+                throw MemberNotFoundException(id)
+            }
+            .toDto()
 
     @Transactional
     fun save(dto: MemberSaveRequest): MemberResponse =

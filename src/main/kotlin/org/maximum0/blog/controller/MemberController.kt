@@ -1,5 +1,6 @@
 package org.maximum0.blog.controller
 
+import jakarta.validation.Valid
 import org.maximum0.blog.domain.member.MemberResponse
 import org.maximum0.blog.domain.member.MemberSaveRequest
 import org.maximum0.blog.service.MemberService
@@ -33,7 +34,7 @@ class MemberController(
     }
 
     @PostMapping
-    fun save(@RequestBody dto: MemberSaveRequest): ComResDto<MemberResponse> {
+    fun save(@Valid @RequestBody dto: MemberSaveRequest): ComResDto<MemberResponse> {
         return ComResDto(HttpStatus.OK, "Success", memberService.save(dto))
     }
 

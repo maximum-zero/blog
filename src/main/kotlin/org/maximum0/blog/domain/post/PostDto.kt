@@ -1,18 +1,23 @@
 package org.maximum0.blog.domain.post
 
+import jakarta.validation.constraints.NotNull
 import org.maximum0.blog.domain.member.*
 
 data class PostSaveRequest(
-    val title: String,
-    val content: String,
-    val memberId: Long,
+    @field:NotNull(message = "required title")
+    val title: String?,
+
+    val content: String?,
+
+    @field:NotNull(message = "required memberId")
+    val memberId: Long?,
 )
 
 fun PostSaveRequest.toEntity(): Post {
     return Post(
-        title = this.title,
-        content = this.content,
-        member = Member.createFakeMember(this.memberId)
+        title = this.title ?: "",
+        content = this.content ?: "",
+        member = Member.createFakeMember(this.memberId!!)
     )
 }
 
