@@ -1,5 +1,6 @@
 package org.maximum0.blog.service
 
+import org.maximum0.blog.domain.member.toDto
 import org.maximum0.blog.domain.post.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -12,8 +13,22 @@ class PostService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findPosts(pageable: Pageable): Page<PostResponse> =
+    fun findAll(pageable: Pageable): Page<PostResponse> =
         postRepository.findPosts(pageable).map {
             it.toDto()
         }
+
+    @Transactional(readOnly = true)
+    fun findById(id: Long): PostResponse =
+        postRepository.findById(id).orElseThrow().toDto()
+
+    @Transactional
+    fun save(dto: PostSaveRequest): PostResponse =
+        postRepository.save(dto.toEntity()).toDto()
+
+
+    @Transactional
+    fun deleteById(id: Long) =
+        postRepository.deleteById(id)
+
 }
