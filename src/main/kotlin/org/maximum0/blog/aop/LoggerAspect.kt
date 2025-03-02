@@ -37,7 +37,7 @@ class LoggerAspect {
     }
 
     @AfterReturning(pointcut = "controllerCut()", returning = "result")
-    fun controllerLoggerAfter(joinPoint: JoinPoint, result: Any) {
+    fun controllerLoggerAfter(joinPoint: JoinPoint, result: Any?) {
 
         val mapper = ObjectMapper()
 
