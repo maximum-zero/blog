@@ -22,12 +22,12 @@ class MemberService(
     fun findById(id: Long): MemberResponse =
         memberRepository.findById(id)
             .orElseThrow{
-                throw MemberNotFoundException(id)
+                throw MemberNotFoundException(id.toString())
             }
             .toDto()
 
     @Transactional
-    fun save(dto: MemberSaveRequest): MemberResponse =
+    fun save(dto: LoginDto): MemberResponse =
         memberRepository.save(dto.toEntity()).toDto()
 
 

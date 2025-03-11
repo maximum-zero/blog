@@ -14,6 +14,8 @@ interface MemberCustomRepository {
 
     fun findMembers(pageable: Pageable): Page<Member>
 
+    fun findMemberByEmail(email: String): Member?
+
 }
 
 class MemberCustomRepositoryImpl(
@@ -37,4 +39,14 @@ class MemberCustomRepositoryImpl(
         return PageableExecutionUtils.getPage(results, pageable, countQuery)
     }
 
+
+    override fun findMemberByEmail(email: String): Member? {
+        return kotlinJdslJpqlExecutor.findAll {
+            select(entity(Member::class))
+                .from(entity(Member::class))
+                .where(
+                    path(Member::email).eq(email)
+                )
+        }.firstOrNull()
+    }
 }

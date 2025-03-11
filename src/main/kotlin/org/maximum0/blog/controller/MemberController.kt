@@ -2,7 +2,7 @@ package org.maximum0.blog.controller
 
 import jakarta.validation.Valid
 import org.maximum0.blog.domain.member.MemberResponse
-import org.maximum0.blog.domain.member.MemberSaveRequest
+import org.maximum0.blog.domain.member.LoginDto
 import org.maximum0.blog.service.MemberService
 import org.maximum0.blog.util.value.ComResDto
 import org.springframework.data.domain.Page
@@ -34,7 +34,7 @@ class MemberController(
     }
 
     @PostMapping
-    fun save(@Valid @RequestBody dto: MemberSaveRequest): ComResDto<MemberResponse> {
+    fun save(@Valid @RequestBody dto: LoginDto): ComResDto<MemberResponse> {
         return ComResDto(HttpStatus.OK, "Success", memberService.save(dto))
     }
 
