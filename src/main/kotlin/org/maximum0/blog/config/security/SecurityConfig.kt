@@ -1,16 +1,19 @@
-package org.maximum0.blog.security
+package org.maximum0.blog.config.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.maximum0.blog.domain.member.MemberRepository
+import org.maximum0.blog.util.func.responseData
+import org.maximum0.blog.util.value.ComResDto
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -18,25 +21,26 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 class SecurityConfig(
     private val authenticationConfiguration: AuthenticationConfiguration,
     private val objectMapper: ObjectMapper,
     private val memberRepository: MemberRepository,
 ) {
-
-    private val log = KotlinLogging.logger {  }
 
 //    @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer? {
@@ -57,16 +61,44 @@ class SecurityConfig(
             .addFilter(authenticationFilter())
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/**").authenticated()  // 인증된 사용자만 접근
-//                    .anyRequest().permitAll()  // 그 외 모든 요청은 허용
+//                    .requestMatchers("/**").authenticated()  // 인증된 사용자만 접근
+//                    .requestMatchers("/post/**").hasAnyRole("ADMIN")
+                    .anyRequest().permitAll()  // 그 외 모든 요청은 허용
             }
             .exceptionHandling {
                 it.accessDeniedHandler(CustomAccessDeniedHandler())
                 it.authenticationEntryPoint(CustomAuthenticationEntryPoint())
             }
             .anonymous { it.disable() }
+            .logout { logout ->
+                logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessHandler(CustomLogoutSuccessHandler(objectMapper))
+            }
 
         return http.build()
+    }
+
+    class CustomLogoutSuccessHandler (
+        private val mapper: ObjectMapper
+    ) : LogoutSuccessHandler {
+
+        private val log = KotlinLogging.logger {  }
+
+        override fun onLogoutSuccess(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            authentication: Authentication?
+        ) {
+            log.info { "logout success" }
+
+            val context = SecurityContextHolder.getContext()
+            context.authentication = null
+            SecurityContextHolder.clearContext()
+
+            val jsonResult = mapper.writeValueAsString(ComResDto(HttpStatus.OK, "logout success", null))
+            responseData(response, jsonResult)
+        }
     }
 
     class CustomAuthenticationEntryPoint: AuthenticationEntryPoint {
@@ -149,7 +181,11 @@ class SecurityConfig(
 
     @Bean
     fun authenticationFilter(): CustomBasicAuthenticationFilter {
-        return CustomBasicAuthenticationFilter(authenticationManager = authenticationManager(), memberRepository = memberRepository)
+        return CustomBasicAuthenticationFilter(
+            authenticationManager = authenticationManager(),
+            memberRepository = memberRepository,
+            mapper = objectMapper
+        )
     }
 
     fun corsConfig(): CorsConfigurationSource {

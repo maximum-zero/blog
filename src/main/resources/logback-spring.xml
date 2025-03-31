@@ -49,4 +49,8 @@
         <appender-ref ref="ASYNC_FILE" />
     </root>
 
+    <logger name="org.maximum0.blog" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
 </configuration>

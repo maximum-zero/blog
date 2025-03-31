@@ -1,4 +1,4 @@
-package org.maximum0.blog.filter
+package org.maximum0.blog.config.filter
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.Filter

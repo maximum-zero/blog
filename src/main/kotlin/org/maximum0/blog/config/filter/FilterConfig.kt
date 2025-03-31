@@ -1,4 +1,4 @@
-package org.maximum0.blog.filter
+package org.maximum0.blog.config.filter
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean

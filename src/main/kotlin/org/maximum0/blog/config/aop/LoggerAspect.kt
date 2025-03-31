@@ -1,4 +1,4 @@
-package org.maximum0.blog.aop
+package org.maximum0.blog.config.aop
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging

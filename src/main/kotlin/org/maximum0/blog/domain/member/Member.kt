@@ -6,10 +6,11 @@ import org.maximum0.blog.domain.AuditingEntity
 @Entity
 @Table(name = "tb_member")
 class Member(
+    id: Long = 0,
     email: String,
     password: String,
-    role: Role,
-) : AuditingEntity() {
+    role: Role = Role.USER,
+) : AuditingEntity(id) {
 
     @Column(name = "email", nullable = false)
     var email: String = email
@@ -24,26 +25,28 @@ class Member(
         protected set
 
     override fun toString(): String {
-        return "Member(email='$email', password='$password', role=$role)"
+        return "Member(email='$email', password='$password', role=$role, createdAt=$createdAt, updatedAt=$updatedAt)"
     }
 
     companion object {
         fun createFakeMember(memberId: Long): Member {
-            val member = Member("", "", Role.USER)
-            member.id = memberId
+            val member = Member(id = memberId, "admin@gmail.com", password = "1234")
             return member
         }
     }
+
+    fun toDto(): MemberResponse {
+        return MemberResponse(
+            id = this.id!!,
+            email = this.email,
+            password = this.password,
+            role = this.role,
+            createdAt = this.createdAt,
+            updatedAt = this.updatedAt,
+        )
+    }
 }
 
-fun Member.toDto(): MemberResponse {
-    return MemberResponse(
-        id = this.id!!,
-        email = this.email,
-        password = this.password,
-        role = this.role,
-    )
-}
 
 enum class Role {
     USER, ADMIN

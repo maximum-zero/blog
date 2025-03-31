@@ -7,9 +7,10 @@ import org.maximum0.blog.domain.post.Post
 @Entity
 @Table(name = "tb_comment")
 class Comment (
+    id: Long = 0,
     content: String,
     post: Post
-) : AuditingEntity() {
+) : AuditingEntity(id) {
 
     @Column(name = "content")
     var content: String = content

@@ -1,4 +1,4 @@
-package org.maximum0.blog.security
+package org.maximum0.blog.config.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -6,9 +6,15 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.maximum0.blog.domain.member.LoginDto
+import org.maximum0.blog.util.CookieProvider
+import org.maximum0.blog.util.func.responseData
+import org.maximum0.blog.util.value.ComResDto
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import java.util.concurrent.TimeUnit
 
 class CustomUserNameAuthenticationFilter(
     private val objectMapper: ObjectMapper
@@ -37,14 +43,23 @@ class CustomUserNameAuthenticationFilter(
     }
 
     override fun successfulAuthentication(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
         chain: FilterChain?,
         authResult: Authentication?
     ) {
         log.info { "Login Complete And Create JWT Token" }
         val principalDetails = authResult?.principal as PrincipalDetails
-        val jwtToken = jwtManager.generateAccessToken(principalDetails)
-        response?.addHeader(jwtManager.jwtHeader, "Bearer $jwtToken")
+        val accessToken = jwtManager.generateAccessToken(objectMapper.writeValueAsString(principalDetails))
+        val refreshToken = jwtManager.generateRefreshToken(objectMapper.writeValueAsString(principalDetails))
+        val refreshCookie = CookieProvider.createCookie(CookieProvider.REFRESH_COOKIE, refreshToken, TimeUnit.DAYS.toSeconds(jwtManager.refreshTokenExpireDay))
+
+        response.addHeader(jwtManager.authorizationHeader, jwtManager.jwtHeader + accessToken)
+//        response.addHeader("refreshToken", jwtManager.jwtHeader + refreshToken)
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+
+        val jsonResult = objectMapper.writeValueAsString(ComResDto(HttpStatus.OK, "Login Success", principalDetails.member))
+
+        responseData(response, jsonResult)
     }
 }

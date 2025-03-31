@@ -3,7 +3,7 @@ package org.maximum0.blog.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.maximum0.blog.domain.member.MemberRepository
 import org.maximum0.blog.exception.MemberNotFoundException
-import org.maximum0.blog.security.PrincipalDetails
+import org.maximum0.blog.config.security.PrincipalDetails
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
